@@ -1,7 +1,7 @@
 import contextlib
 import pdb
 from test.itest import ITest
-from test.result import StepResult, CaseResult, SuiteResult, FlightResult
+from test.result import StepResult, CaseResult, SuiteResult, FlightResult, AResult
 from util.enums import TextualEnum
 from util.service.report_service import IReport, ReportService
 from argparse import ArgumentParser
@@ -11,50 +11,50 @@ from argparse import ArgumentParser
 class ATestable:
     DESCRIPTION = None
 
-    def __init__(self):
-        self._name = None
-        self.description = self.DESCRIPTION
+    def __init__(self) -> None:
+        self._name: str or None = None
+        self.description: str = self.DESCRIPTION
         # For non-steps, the run-mode of the tests at large (usually passed from CLI).
         # For steps, the specific response for that step. Thereforez` subclasses have different setters/getters
-        self._response = None
-        self._result = None  # should be immediately overridden to untested (for starters)
+        self._response: ITest.Response or None = None
+        self._result: AResult or None = None  # should be immediately overridden to untested (for starters)
 
     # Primarily for overwriting by base classes.
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name
 
     @name.setter
-    def name(self, name):
+    def name(self, name: str) -> None:
         self._name = name
 
     @property
-    def default_description(self):
+    def default_description(self) -> str:
         return '{} ({})'.format(self.name, self.description)
 
     # Results are a distinct (if dependent) entity from the test itself
     # Can be accessed during runs but most important at completion
     @property
-    def result(self):
+    def result(self) -> AResult:
         return self._result
 
     @result.setter
-    def result(self, value):
+    def result(self, value: AResult) -> None:
         self._result = value
 
-    def record_result(self, result):
+    def record_result(self, result: AResult) -> None:
         self._result.record_result(result)
 
-    def report(self):
+    def report(self) -> None:
         self._result.report()
 
     # useful when looping to try and induce intermittent failures
-    def reset_result(self):
+    def reset_result(self) -> None:
         self._result.reset()
 
     # output wrapper for bookending any discreet phase of a test
     @contextlib.contextmanager
-    def demarcate_phase(self, phase):
+    def demarcate_phase(self, phase: str) -> None:
         message = '{} / {} phase'.format(self.name, phase)
         with ReportService.demarcate(message, IReport.Level.none, IReport.Patency.medium):
             yield
