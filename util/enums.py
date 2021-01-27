@@ -5,7 +5,7 @@ import argparse
 
 class TextualEnum(Enum):
     # Enum string representations include the enum test (e.g. "Color.red". This class simply strips that off.
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
