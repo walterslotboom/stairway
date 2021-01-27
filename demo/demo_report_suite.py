@@ -73,9 +73,9 @@ class AllSuitesSuite(ASuite):
 
 
 if __name__ == '__main__':
-    # arg_parser = AllResultsCase.make_arg_parser()
-    # args = AllSuitesSuite.parse_args(arg_parser, sys.argv[1:])
-    # AllSuitesSuite(**args).execute()
-    arg_parser = FlightSuite.make_arg_parser()
-    args = FlightSuite.parse_args(arg_parser, sys.argv[1:])
-    FlightSuite(**args).execute()
+    arg_parser = AllResultsCase.make_arg_parser()
+    args = AllSuitesSuite.parse_args(arg_parser, sys.argv[1:])
+    AllSuitesSuite(**args).execute()
+    # arg_parser = FlightSuite.make_arg_parser()
+    # args = FlightSuite.parse_args(arg_parser, sys.argv[1:])
+    # FlightSuite(**args).execute()

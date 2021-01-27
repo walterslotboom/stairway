@@ -303,7 +303,7 @@ class AStairs(ATestable):
                 yield step  # results can be updated anytime in context
             finally:
                 step.assess_state()
-                self.record_step(step.result)  # @todo Change to record_result?
+                self.record_result(step.result)
                 if step.result.state in ITest.BAD_STATE:
                     if self._response == ITest.Response.preserve and step.response == ITest.Response.preserve:
                         pdb.set_trace()
@@ -331,16 +331,6 @@ class AStairs(ATestable):
                 finally:
                     # step.assess_state()
                     self.record_result(flight.result)
-
-    def record_step(self, step_result):
-        """
-        Record result for an step
-
-        @todo What value is this providing if only called for steps
-
-        :param step_result: Steps result
-        """
-        super().record_result(step_result)
 
 
 class AFlight(AStairs, AStep):
