@@ -1,6 +1,6 @@
 import random
 import sys
-from test.testable import ACase
+from test.testable import ACase, ACliTestable
 from test.itest import ITest
 
 
@@ -227,6 +227,10 @@ if __name__ == '__main__':
     # arg_parser = AllResultsCase.make_arg_parser()
     # args = AllResultsCase.parse_args(arg_parser, sys.argv[1:])
     # ExpectedPassMultiCase(**args).execute()
-    arg_parser = UnnamedFlightCase.make_arg_parser()
-    args = UnnamedFlightCase.parse_args(arg_parser, sys.argv[1:])
-    UnnamedFlightCase(**args).execute()
+    # arg_parser = UnnamedFlightCase.make_arg_parser()
+    # args = UnnamedFlightCase.parse_args(arg_parser, sys.argv[1:])
+    # UnnamedFlightCase(**args).execute()
+    arg_parser = FailingCase.make_arg_parser()
+    args = FailingCase.parse_args(arg_parser, sys.argv[1:])
+    args[ACliTestable.Args.response.name] = ITest.Response.preserve.name
+    FailingCase(**args).execute()

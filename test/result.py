@@ -22,7 +22,7 @@ class AResult:
         if state in ITest.State:
             self._state = state
         else:
-            raise ITest.InvalidStatusException('State {} not in valid statuses: {}'.format(state, ITest.State))
+            raise ITest.InvalidStateException('State {} not in valid statuses: {}'.format(state, ITest.State))
 
     def report(self):
         raise NotImplementedError

@@ -1,10 +1,21 @@
+"""
+Basic testing globals
+"""
 from util.enums import OrderedEnum, TextualEnum
 
 
 class ITest:
-    # possible test states in order so that worst result can propagate up test result hierarchy
+    """
+    Interface style class providing basic testing 'globals'
+    """
+
     class State(OrderedEnum):
-        UNTESTED = 55
+        """
+        Possible test states
+
+        Ordered so that comparison during result assessment is possible.
+        """
+        UNTESTED = 55  # before and at start of test
         INAPPLICABLE = 45
         PASS = 40
         EXPECTED = 35
@@ -14,18 +25,24 @@ class ITest:
         UNEXPECTED = 10
         FAIL = 5
 
+    # Inherently bad states
     BAD_STATE = []
     for state in State:
         if state <= State.ABEND:
             BAD_STATE.append(state)
 
-    # possible responses upon failing a step
     class Response(TextualEnum):
+        """
+        Possible responses to take upon failing a step (or possibly higher constructs)
+        """
         preserve = 1  # stop all tests so state can be examined
         conclude = 2  # @todo add support for this
         proceed = 3  # log failure and keep running (for minor issues)
 
     class Phase(OrderedEnum):
+        """
+        Standard phases of a test case
+        """
         reserve = 10  # allocate physical resources
         prepare = 20  # establish base state, setup key objects used in test
         test = 30  # what all this is for
@@ -34,5 +51,8 @@ class ITest:
         report = 60  # output the results to screen / log / database / etc
         release = 70  # return physical resources to pool
 
-    class InvalidStatusException(Exception):
+    class InvalidStateException(Exception):
+        """
+        Invalid result state for testable
+        """
         pass

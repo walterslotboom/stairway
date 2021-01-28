@@ -1,54 +1,53 @@
+"""
+Custom enumeration classes
+
+Used primarily for fromalizing CLI interactions and reporting, and comparison of restricted values.
+"""
+from __future__ import annotations
 from enum import Enum
 from functools import total_ordering
-import argparse
 
 
 class TextualEnum(Enum):
-    # Enum string representations include the enum test (e.g. "Color.red". This class simply strips that off.
+    """
+    Strips the class name from Enum string representations (e.g. "Color.red" becomes "red").
+    """
     def __str__(self) -> str:
         return self.name
 
 
 @total_ordering
 class OrderedEnum(TextualEnum):
-    def __lt__(self, other):
+    """
+    Enumeration of textualizable values that can be ordered for comparison operations.
+    """
+
+    def __lt__(self, other: OrderedEnum) -> bool:
         if self.__class__ is other.__class__:
             return self.value < other.value
         return NotImplemented
 
+    def __le__(self, other: OrderedEnum) -> bool:
+        if self.__class__ is other.__class__:
+            return self.value <= other.value
+        return NotImplemented
 
-class EnumedAttributes:
-    # use for coupling regex named groups with class attributes
-    class Attributes(TextualEnum):
-        pass
+    def __eq__(self, other: OrderedEnum) -> bool:
+        if self.__class__ is other.__class__:
+            return self.value == other.value
+        return NotImplemented
 
-    def __init__(self, **kwargs):
-        for attribute in self.Attributes:
-            setattr(self, attribute.name, kwargs.get(attribute.name, None))
+    def __ne__(self, other: OrderedEnum) -> bool:
+        if self.__class__ is other.__class__:
+            return self.value != other.value
+        return NotImplemented
 
+    def __ge__(self, other: OrderedEnum) -> bool:
+        if self.__class__ is other.__class__:
+            return self.value >= other.value
+        return NotImplemented
 
-class ArgChoiceEnum(TextualEnum):
-    # use for easy definition of argparse argtypes:
-    #
-    #     class SelectionOptions(ArgChoiceEnum):
-    #         recurse = 0
-    #         some = 1
-    #         none = 2
-    #
-    #    parser = argparse.ArgumentParser()
-    #    parser.add_argument('--select',
-    #                        type=SelectionOptions.arg_type,
-    #                        choices=SelectionOptions,
-    #                        help="what you want?")
-    #
-    # The value returned in the parsed arguments is not the string, but an instance of the enum
-    @classmethod
-    def arg_type(cls, s: str) -> 'ArgChoiceEnum':
-        '''
-        argparse type validation function, that takes a string and if valid, returns the
-        matching enum object
-        '''
-        try:
-            return cls[s]
-        except KeyError:
-            raise argparse.ArgumentError()
+    def __gt__(self, other: OrderedEnum) -> bool:
+        if self.__class__ is other.__class__:
+            return self.value > other.value
+        return NotImplemented

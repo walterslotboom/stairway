@@ -4,6 +4,8 @@ Includes core classes for running tests, recording results, and reporting those 
 Testable hierarchy contains base classes for suites, cases, flights (collections of steps), and steps. Results
 automatically propagate up through the testable hierarchy as tests run, and are summarized as they complete. Progress
 tracking and results is integrated into the running of the testable objects.
+
+@todo Make setters for restricted properties validate against acceptable values
 """
 from __future__ import annotations
 import contextlib
@@ -268,8 +270,8 @@ class AStep(ATestable):
         if response in ITest.Response:
             self._response = response
         else:
-            raise ITest.InvalidStatusException('Response {} not in valid responses: {}'.format(response,
-                                                                                               ITest.Response))
+            raise ITest.InvalidStateException('Response {} not in valid responses: {}'.format(response,
+                                                                                              ITest.Response))
 
 
 class AStairs(ATestable):
