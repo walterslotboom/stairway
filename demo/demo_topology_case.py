@@ -2,7 +2,7 @@ import sys
 
 from demo.demo_topology import DemoNodeConstraints, DemoConstraintSatisfier, DemoConstraintService
 from test.itest import ITest
-from test.testable import ACase
+from test.testable import ACase, ASuite
 from test.topology import ATopologyConstraint, IAgent, Operator, Constraint
 
 
@@ -107,20 +107,19 @@ class CliConstraintTopoCase(ATopoCase):
         return [(self.uppercase, self.lowercase, self.number)]
 
 
-# class CliAgentTopoCase(OneNodeTopoCase):
-#
-#     DESCRIPTION = "CLI-based agent parameter topology instantiation"
-#
-#
-#     @property
-#     def demo_node_factory_constraint_seeds(self):
-#         return [(DemoNodeConstraints.UPPERCASE_A, DemoNodeConstraints.LOWERCASE_A, DemoNodeConstraints.NUMBER_1)]
+class AllToposSuite(ASuite):
+
+    DESCRIPTION = "All topology demo suites and cases"
+
+    def __init__(self, **kwargs):
+        testables = [OneNodeTopoCase(**kwargs), ThreeNodeTopoCase(**kwargs), CliConstraintTopoCase(**kwargs)]
+        super().__init__(testables, **kwargs)
 
 
 if __name__ == '__main__':
-    arg_parser = OneNodeTopoCase.make_arg_parser()
-    args = OneNodeTopoCase.parse_args(arg_parser, sys.argv[1:])
-    OneNodeTopoCase(**args).execute()
+    arg_parser = AllToposSuite.make_arg_parser()
+    args = AllToposSuite.parse_args(arg_parser, sys.argv[1:])
+    AllToposSuite(**args).execute()
     # arg_parser = ThreeNodeTopoCase.make_arg_parser()
     # args = ThreeNodeTopoCase.parse_args(arg_parser, sys.argv[1:])
     # ThreeNodeTopoCase(**args).execute()

@@ -28,7 +28,7 @@ class ATestable:
 
     :ivar _name: short name for summary references
     :ivar description: long description for meaningful reporting
-    :ivar _response: How to react when result state is not pass.
+    :ivar _response: Action with which to respond to unexpected final states
     For non-steps, the run-mode of the tests at large (usually passed from CLI), primarily to pass down to subtestables.
     For steps, the specific response for that step. Therefore subclasses have different setters/getters.
     @todo Is more rigorous response OOP needed?
@@ -116,8 +116,7 @@ class ACliTestable:
 
     Contains argument parsing and initialization.
 
-    :ivar **log: Logging level above which to report all events.:
-    :ivar **response: Action with which to respond to an unexpected result state.:
+    :ivar: _kwargs: arguments referenced in later reporting
     """
 
     class Args(TextualEnum):
@@ -137,6 +136,10 @@ class ACliTestable:
         return type(self).__name__
 
     def __init__(self, **kwargs: str) -> None:
+        """
+        :param **log: Logging level above which to report all events.:
+        :param **response: Action with which to respond to an unexpected result state.:
+        """
         super().__init__()
         self._kwargs = kwargs
         # report all events above the specified level (default info)
@@ -148,7 +151,7 @@ class ACliTestable:
 
     # command-line processing
     @staticmethod
-    def parse_args(parser: ArgumentParser, argsv: str) -> Dict[str, str]:
+    def parse_args(parser: ArgumentParser, argsv: List[str]) -> Dict[str, str]:
         """
         Parse the list of command line strings into a dictionary
 
@@ -185,16 +188,14 @@ class AStep(ATestable):
     They perform a singular validation / verification that is recorded and reported.
     Their final state dictates the result of not only the step itself, but encompassing testables.
 
-    :ivar _result: Current result of the step, including description, state, message
     :ivar expecteds: All acceptable final states of the step
-    :ivar response: Action with which to respond to unexpected final states
 
     Should only be used within context manager.
     """
 
     def __init__(self, description: str or None = None, state: ITest.State = ITest.State.UNTESTED,
                  message: str or None = None, expecteds: List[ITest.State] = None,
-                 response=ITest.Response.preserve):
+                 response=ITest.Response.preserve) -> None:
         """
         Initialization of test step
 
@@ -275,9 +276,9 @@ class AStairs(ATestable):
     """
     Aggregates individual steps into larger, more meaningful sequences (e.g. flights & cases).
 
-    This consists primarily of two constructs:
-    * Context managers for individual steps and aggregate flights
-    * Result reporting which involves the propagation of step results upward through the hierarchy
+    Context managers for individual steps and aggregate flights.
+
+    Abstract
     """
 
     @contextlib.contextmanager
@@ -285,7 +286,7 @@ class AStairs(ATestable):
                 message: str or None = None, expecteds: List[ITest.State] = None,
                 response: ITest.Response = ITest.Response.preserve) -> AStep:
         """
-        Runs an individual step's actions and verifications
+        Context manager to run an individual step's actions and verifications
 
         All steps should be run within this context to ensure proper recording / reporting at the case level
         The real essence of the step, however, is in the AStep object.
@@ -308,15 +309,15 @@ class AStairs(ATestable):
                     if self._response == ITest.Response.preserve and step.response == ITest.Response.preserve:
                         pdb.set_trace()
 
-    # All flights need to be run within this context, currently for reporting but later for state/exception handling
     @contextlib.contextmanager
     def flyer(self, name: str or None = None, description: str or None = None,
               state: ITest.State = ITest.State.UNTESTED, message: str or None = None) -> AFlight:
         """
-        Runs a series of individual steps and records/reports result as a single entity.
+        Context manager to run a flight's sequence of actions and verifications
 
-        This is particularly useful for running large numbers of similar permutations.
-        Additional usages include iterating over the same step/series to trigger intermittent/unpredictable issues.
+        All flights need to be run within this context.
+        Currently for recording / reporting but later for state/exception handling.
+
         :param name: Short name for reporting references
         :param description: Meaningful but short explanation of the step
         :param state: Initial state of the step, which will be updated accordingly
@@ -334,51 +335,122 @@ class AStairs(ATestable):
 
 
 class AFlight(AStairs, AStep):
-    NAME = 'Unnamed'
+    """
+    Runs a series of individual steps and records/reports the result as a single entity.
 
-    def __init__(self, name, description, state, message):
+    Usually constitutes a subset of a case's steps.
+    This is particularly useful for running large numbers of similar permutations.
+    Additional usages include iterating over the same step/series to trigger intermittent/unpredictable issues.
+    """
+    NAME: str = 'Unnamed'  # Better than displaying None for anonymous flights
+
+    def __init__(self, name: str or None = None, description: str or None = None,
+                 state: ITest.State = ITest.State.UNTESTED, message: str or None = None) -> None:
+        """
+        :param name: Short name for reporting references
+        :param description: Meaningful but short explanation of the step
+        :param state: Initial state of the step, which will be updated accordingly
+        :param message: Explanation of state
+        """
         super().__init__(description, state, message)
         if name is None:
             name = self.NAME
         self.name = name
         self._result = FlightResult(self.name, self.default_description)
 
-    def __enter__(self):
+    def __enter__(self) -> AFlight:
         return self
 
-    def __exit__(self, exception_type, exception_value, traceback):
+    def __exit__(self, exception_type, exception_value, traceback) -> None:
         self._result.report(recurse=False)
 
 
 class ACase(ACliTestable, AStairs):
+    """
+    A substantive, coherent sequence of steps that verify aspects of product functionality.
 
-    def __init__(self, **kwargs):
+    This is the main construct by which meaningful tests are executed.
+    It consists of the phases detailed in its methods.
+    """
+
+    def __init__(self, **kwargs: str):
+        """
+        Initialization should define the topology constraints of the test.
+        :param kwargs: CLI parameters
+        """
         super().__init__(**kwargs)
         self._result = CaseResult(self.name, self.default_description)
 
-    def reserve(self):
+    def reserve(self) -> None:
+        """
+        Reservation phase allocates and configures nodes in the topology
+
+        Puts the topology constraints through a satisfaction process that resolves it into a
+        topology that contains the usable objects specific to the test.
+        In more advanced systems this will involve a reservation system and dynamic network configuration.
+        """
         pass
 
-    def prepare(self):
+    def prepare(self) -> None:
+        """
+        Preparation phase establishes base state and coordinates crucial objects
+
+        Once topology is available, drives all nodes in the test to predefined bases states.
+        Establishes objects crucial to test that are dependent on specific of topology.
+        This allows the test phase to be a more elegant 'story'.
+        """
         pass
 
-    def test(self):
+    def test(self) -> None:
+        """
+        Test phase drives the topology through and to a series of states and verifies actual versus expected.
+
+        This is what it's all about!
+        Should utilize template method pattern with polymorphic objects to make a readable story.
+        """
         pass
 
-    def audit(self):
+    def audit(self) -> None:
+        """
+        Audit phase performs a series of standardized checks.
+
+        Assesses whether system experienced any unexpected side effects not directly revealed by verification steps.
+        Examples include: critical logs, resource (memory, storage) usage,
+        """
         pass
 
-    def restore(self):
+    def restore(self) -> None:
+        """
+        Restoration phase recovers base states of persistent test systems.
+
+        Makes the systems ready for the next test.
+        Includes supporting devices (e.g. clients, clouds, etc.)
+        """
         pass
 
-    def report(self):  # included here for explicitness
+    def report(self) -> None:  # included here for explicitness
+        """
+        Report phase outputs the results and records them to persistent media.
+
+        Persistent media ranges from standard output, to log transcripts, to databases.
+        """
         super().report()
 
-    def release(self):
+    def release(self) -> None:
+        """
+        Release phase frees reserved objects.
+
+        The case is considered complete at the end of this
+        """
         pass
 
     # runs all test phases with standardized recording / reporting
-    def execute(self):
+    def execute(self) -> None:
+        """
+        Drives the case through its distinct phases
+
+        Each phase is demarcated in the transcript.
+        """
 
         with ReportService.demarcate(self.name, IReport.Level.info, IReport.Patency.major, trail=False):
             ReportService.report('Description: {}'.format(self.description), timestamp=False)
@@ -405,14 +477,27 @@ class ACase(ACliTestable, AStairs):
 
 
 class ASuite(ACliTestable, ATestable):
+    """
+    Hierachical sequence of subsuites and cases.
 
-    def __init__(self, testables=None, **kwargs):
+    :ivar: testables: subsuites and cases contained in the suite
+    """
+
+    def __init__(self, testables: List[ACliTestable] = None, **kwargs: str) -> None:
+        """
+        :param testables: subsuites and cases to add to the suite
+        :param kwargs: CLI parameters affecting testables
+        """
         super().__init__(**kwargs)
         self.testables = testables  # list of subsuites and cases
         self._result = SuiteResult(self.name, self.default_description)
 
-    # Suites have less phases than cases since they are primarily just organizational
-    def execute(self):
+    def execute(self) -> None:
+        """
+        Iteratively runs the sequence of contained subsuites and cases
+
+        Suites have less phases than cases since they are primarily just organizational
+        """
         with ReportService.demarcate(self.name, IReport.Level.info, IReport.Patency.major, trail=False):
             ReportService.report('Description: {}'.format(self.description), timestamp=False)
             ReportService.report('Parameters: {}'.format(str(self._kwargs)), timestamp=False)
@@ -422,7 +507,10 @@ class ASuite(ACliTestable, ATestable):
             with self.demarcate_phase(ITest.Phase.report.name):
                 self.report()
 
-    def test(self):
+    def test(self) -> None:
+        """
+        Test phase iterates through all subsuites and cases
+        """
         for testable in self.testables:
             testable.execute()
             self.record_result(testable.result)
