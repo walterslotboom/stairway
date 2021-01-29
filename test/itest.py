@@ -16,6 +16,7 @@ class ITest:
         Ordered so that comparison during result assessment is possible.
         """
         UNTESTED = 55  # before and at start of test
+        RESET = 50  # used for looping against intermittent failures
         INAPPLICABLE = 45
         PASS = 40
         EXPECTED = 35

@@ -1,5 +1,5 @@
 """
-Includes core classes for running tests, recording results, and reporting those results.
+Core classes for running tests, recording results, and reporting those results.
 
 Testable hierarchy contains base classes for suites, cases, flights (collections of steps), and steps. Results
 automatically propagate up through the testable hierarchy as tests run, and are summarized as they complete. Progress
@@ -61,8 +61,8 @@ class ATestable:
 
     def reset_result(self) -> None:
         """
-        Resets the testable's result and message to that dictated by initialization.
-        This is useful when looping a testable to try and induce an intermittent failure.
+        Sets the testable's result and message to Reset state.
+        Useful when looping a testable to try and induce an intermittent failure.
         """
         self._result.reset()
 
