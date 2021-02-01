@@ -1,7 +1,6 @@
+# @todo Change satisfiers into resolvers
 from __future__ import annotations
-
 from typing import List
-
 from util.enums import TextualEnum
 
 
@@ -173,54 +172,119 @@ class ConstraintSatisfier:
 
 
 class AIndustry:
+    """
+    Factory of factories for making nodes' automation objects.
 
-    def __init__(self, agency=None):
+    Each node in the topology has an industry by which all of its factories and services are made.
+    These factories in turn create the automation objects that do the actual interactions.
+    The industry is specific to that nodes versioning, which is dervied from the constraints.
+    The motivation is that once the node is resolved, the tests can be oblivious to the implementation details.
+
+    :ivar: agency: The agency the industry will pass onto its factories
+    """
+
+    def __init__(self, agency: AAgency or None = None) -> None:
         self.agency = agency
 
 
 class AFactory(AIndustry):
+    """
+    Factory for making a node's automation objects.
+
+    Created by a corresponding industry, a factory creates component/purpose-specific automation objects.
+    The industry is specific to that nodes versioning, which is dervied from the constraints.
+    The exact mechanism for the automation will be dependent on the factory's agency/agents.
+    The motivation is that once the node is resolved, the tests can be oblivious to the implementation details.
+    """
     pass
 
 
 class IAgent:
+    """
+    Interface-style class for define agent globals,
+    """
 
     class IAgentType(TextualEnum):
+        """
+        Possible agent types
+        """
         native = 0  # executes in immediate environment using standard Python libraries
         cli = 1  # executes via CLI drivers like Sarge or PExpect
         rest = 2  # executes via a REST client to REST server
 
+    # Valid agent types
     # @todo this should be demo-specific and empty tuple here
     AGENT_TYPES = (IAgentType.native, IAgentType.cli, IAgentType.rest)
 
 
 class AAgent:
+    """
+    The mechanism by which automation actions are performed.
+
+    Specific automation actions need to be performed a specific technology (e.g. REST, CLI, GUI).
+    An agent provides a collection of associated capability(s) for a specific component (e.g. networking, logs).
+    """
     pass
 
 
 # @todo subclasses should be demo-specific! should subclasses be pushed down or extracted?
 class AAgency:
+    """
+    The collection of agents for a node
+
+    Returns on-demand agents for use by the automation objects.
+    A single component can have multiple polymorphic agents to accomplish capabilities in different ways.
+    The motivation is that the test can remain oblivious to the exact mechanism of its implementation.
+
+    :ivar: agents: All valid agents for the node.
+    :ivar: active_agent: The currently active agent that will be used for requested actions.
+    :ivar: default_agent: The agent to use if none are explicitly specified.
+    """
 
     class NativeAgent(AAgent):
+        """
+        Performs actions via the system's local libraries.
+
+        Example: Python's file modules creating, modifying, and deleting files.
+        """
         pass
 
     class CliAgent(AAgent):
+        """
+        Performs actives via a CLI interface.
 
-        def __init__(self):
+        Examples: Connection via telnet/SSH driven by pexpect or sarge.
+
+        :ivar: ip: IP address for connecting
+        :ivar: id: username / ID for logging in
+        :ivar: pw: password for logging in
+        """
+
+        def __init__(self) -> None:
             super().__init__()
             self.ip = None
             self.id = None
             self.pw = None
 
     class RestAgent(AAgent):
+        """
+        Performs actions via a standard REST interface
+        """
         pass
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.agents = {}
         self.active_agent = None
         self.default_agent = None
 
 
 class Context:
+    """
+    Arbitrary test-specific environment variables.
+
+    :ivar: default_agent: The agent to use if none are explicitly specified.
+    :ivar: kwargs: test specific enviroment variables
+    """
     def __init__(self):
         self.default_agent = None
         self.kwargs = None  # arbitrary additional context is case-specific
