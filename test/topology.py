@@ -5,13 +5,17 @@ Topologies are defined via a set of constraints regarding their component nodes 
 They are then resolved into version-specific nodes which provide access to the underlying automation.
 This access is via industries and agencies.
 """
-# @todo Change satisfiers into resolvers
 from __future__ import annotations
 from typing import List
 from util.enums import TextualEnum
 
 
 class Operator:
+    """
+    Comparison operators that can be used with constraints.
+
+    Not implemented. Currently assumes equivalence only.
+    """
     LT = '<'
     LE = '<='
     EQ = '=='
