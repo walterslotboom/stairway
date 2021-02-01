@@ -1,3 +1,10 @@
+"""
+Core topology constraints and resultant topologies
+
+Topologies are defined via a set of constraints regarding their component nodes and connections.
+They are then resolved into version-specific nodes which provide access to the underlying automation.
+This access is via industries and agencies.
+"""
 # @todo Change satisfiers into resolvers
 from __future__ import annotations
 from typing import List
