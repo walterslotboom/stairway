@@ -1,5 +1,5 @@
 from test.topology import ANodeConstraints, AIndustry, AFactory, AAgency, ConstraintSatisfier, ANode, \
-    Constraint, Operator, IAgent
+    Constraint, Operator, IAgent, NativeAgent, CliAgent, RestAgent
 from util.service.misc_service import ListService
 from util.service.report_service import ReportService
 
@@ -81,9 +81,9 @@ class DemoAgency(AAgency):
 
     def __init__(self):
         super().__init__()
-        self.agents[IAgent.IAgentType.native.name] = self.NativeAgent()
-        self.agents[IAgent.IAgentType.cli.name] = self.CliAgent()
-        self.agents[IAgent.IAgentType.native.name] = self.RestAgent()
+        self.agents[IAgent.IAgentType.native.name] = NativeAgent()
+        self.agents[IAgent.IAgentType.cli.name] = CliAgent()
+        self.agents[IAgent.IAgentType.native.name] = RestAgent()
 
 
 class Aa1Agency(DemoAgency):

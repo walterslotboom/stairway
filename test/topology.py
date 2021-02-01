@@ -238,7 +238,40 @@ class AAgent:
     pass
 
 
-# @todo subclasses should be demo-specific! should subclasses be pushed down or extracted?
+class NativeAgent(AAgent):
+    """
+    Performs actions via the system's local libraries.
+
+    Example: Python's file modules creating, modifying, and deleting files.
+    """
+    pass
+
+
+class CliAgent(AAgent):
+    """
+    Performs actives via a CLI interface.
+
+    Examples: Connection via telnet/SSH driven by pexpect or sarge.
+
+    :ivar: ip: IP address for connecting
+    :ivar: id: username / ID for logging in
+    :ivar: pw: password for logging in
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.ip = None
+        self.id = None
+        self.pw = None
+
+
+class RestAgent(AAgent):
+    """
+    Performs actions via a standard REST interface
+    """
+    pass
+
+
 class AAgency:
     """
     The collection of agents for a node
@@ -251,37 +284,6 @@ class AAgency:
     :ivar: active_agent: The currently active agent that will be used for requested actions.
     :ivar: default_agent: The agent to use if none are explicitly specified.
     """
-
-    class NativeAgent(AAgent):
-        """
-        Performs actions via the system's local libraries.
-
-        Example: Python's file modules creating, modifying, and deleting files.
-        """
-        pass
-
-    class CliAgent(AAgent):
-        """
-        Performs actives via a CLI interface.
-
-        Examples: Connection via telnet/SSH driven by pexpect or sarge.
-
-        :ivar: ip: IP address for connecting
-        :ivar: id: username / ID for logging in
-        :ivar: pw: password for logging in
-        """
-
-        def __init__(self) -> None:
-            super().__init__()
-            self.ip = None
-            self.id = None
-            self.pw = None
-
-    class RestAgent(AAgent):
-        """
-        Performs actions via a standard REST interface
-        """
-        pass
 
     def __init__(self) -> None:
         self.agents = {}
