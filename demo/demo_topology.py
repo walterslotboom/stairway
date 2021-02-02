@@ -43,19 +43,36 @@ class DemoNodeConstraints(ANodeConstraints):
               LOWERCASE: LOWERCASES}
 
 class ANamer:
-    NAME = None  # This is an example of dynamically supplied context
+    """
+    Basic automation that transcends particular agent.
+
+    Contains the non-interface-specific processing that needs to be done.
+    This minimal example simply returns a name unique to the class.
+    Name will differ based on constraint-driven node satisfaction.
+    """
+    NAME = None
 
     @property
     def name(self):
         return self.NAME
 
 class NamerNative(ANamer):
+    """
+    Agent-specific wrapper for basic automation
+
+    This native agent simply outputs the unique name to standard out.
+    """
 
     def print_name(self):
         ReportService.report('Node name: {}'.format(self.name))
 
 
 class NameFactory(AFactory):
+    """
+    Factory for making agent-specific automation objects.
+
+    Will use default agent type if none supplied.
+    """
 
     NAMER_NATIVE = NamerNative
 
@@ -67,6 +84,11 @@ class NameFactory(AFactory):
 
 
 class DemoIndustry(AIndustry):
+    """
+    Factory for creating factories of agent-specific automation objects.
+
+    Will use default agent type if none supplied.
+    """
 
     NAME_FACTORY = NameFactory
 
@@ -75,6 +97,7 @@ class DemoIndustry(AIndustry):
             self.agency.active_agent = self.agency.default_agent
         return self.NAME_FACTORY(self.agency)
 
+# The following are several uppercase/lowercase/number (e.g. client / OS family / OS version) permutations
 
 class Aa1NamerNative(NamerNative):
     NAME = 'Aa1'
@@ -116,9 +139,10 @@ class DemoAgency(AAgency):
 
     def __init__(self):
         super().__init__()
-        self.agents[IAgent.IAgentType.native.name] = NativeAgent()
-        self.agents[IAgent.IAgentType.cli.name] = CliAgent()
-        self.agents[IAgent.IAgentType.native.name] = RestAgent()
+        self.agents = IAgent.AGENT_TYPES
+        # self.agents[IAgent.IAgentType.native.name] = NativeAgent()
+        # self.agents[IAgent.IAgentType.cli.name] = CliAgent()
+        # self.agents[IAgent.IAgentType.native.name] = RestAgent()
 
 
 class Aa1Agency(DemoAgency):

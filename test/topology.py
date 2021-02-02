@@ -186,7 +186,7 @@ class AIndustry:
     """
     Factory of factories for making nodes' automation objects.
 
-    Each node in the topology has an industry by which all of its factories and services are made.
+    Each node in the topology has an industry by which all of its (many) factories and services are made.
     These factories in turn create the automation objects that do the actual interactions.
     The industry is specific to that nodes versioning, which is dervied from the constraints.
     The motivation is that once the node is resolved, the tests can be oblivious to the implementation details.
@@ -203,7 +203,7 @@ class AFactory(AIndustry):
     Factory for making a node's automation objects.
 
     Created by a corresponding industry, a factory creates component/purpose-specific automation objects.
-    The industry is specific to that nodes versioning, which is dervied from the constraints.
+    The industry is specific to that nodes versioning, which is derived from the constraints.
     The exact mechanism for the automation will be dependent on the factory's agency/agents.
     The motivation is that once the node is resolved, the tests can be oblivious to the implementation details.
     """
@@ -286,7 +286,8 @@ class AAgency:
     """
 
     def __init__(self) -> None:
-        self.agents = {}
+        # @ todo make agents a list of agent names
+        self.agents = []
         self.active_agent = None
         self.default_agent = None
 
