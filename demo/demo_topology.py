@@ -6,7 +6,7 @@ Examples are impractical but provide analogies for more meaningful usage.
 """
 
 from test.topology import ANodeConstraints, AIndustry, AFactory, AAgency, ConstraintSatisfier, ANode, \
-    Constraint, Operator, IAgent, NativeAgent, CliAgent, RestAgent
+    Constraint, Operator, IAgent
 from util.service.misc_service import ListService
 from util.service.report_service import ReportService
 
@@ -42,6 +42,7 @@ class DemoNodeConstraints(ANodeConstraints):
               UPPERCASE: UPPERCASES,
               LOWERCASE: LOWERCASES}
 
+
 class ANamer:
     """
     Basic automation that transcends particular agent.
@@ -55,6 +56,7 @@ class ANamer:
     @property
     def name(self):
         return self.NAME
+
 
 class NamerNative(ANamer):
     """
@@ -98,6 +100,7 @@ class DemoIndustry(AIndustry):
         return self.NAME_FACTORY(self.agency)
 
 # The following are several uppercase/lowercase/number (e.g. client / OS family / OS version) permutations
+
 
 class Aa1NamerNative(NamerNative):
     NAME = 'Aa1'
