@@ -136,22 +136,15 @@ class Bc3Industry(DemoIndustry):
 
 
 class DemoAgency(AAgency):
+    """
+    Agency specific to demo
+
+    Only supports native agent for now.
+    """
 
     def __init__(self):
         super().__init__()
         self.agents = [IAgent.IAgentType.native]
-
-
-class Aa1Agency(DemoAgency):
-    pass
-
-
-class Aa2Agency(DemoAgency):
-    pass
-
-
-class Bc3Agency(DemoAgency):
-    pass
 
 
 # convenience wrapper
@@ -175,6 +168,7 @@ class DemoConstraintSatisfier(ConstraintSatisfier):
     # An example of a hierarchical constraint satisfaction
     def satisfy_node(self, constraints):
         node = ANode()
+        node.agency = DemoAgency()
 
         uppercase_constraint = ListService.get_item_by_value(constraints, 'trait', DemoNodeConstraints.UPPERCASE)
         lowercase_constraint = ListService.get_item_by_value(constraints, 'trait', DemoNodeConstraints.LOWERCASE)
@@ -185,15 +179,12 @@ class DemoConstraintSatisfier(ConstraintSatisfier):
         if uppercase is DemoNodeConstraints.UPPERCASE_A:
             if lowercase is DemoNodeConstraints.LOWERCASE_A:
                 if number is DemoNodeConstraints.NUMBER_1:
-                    node.agency = Aa1Agency()
                     node.industry = Aa1Industry(node.agency)
                 elif number is DemoNodeConstraints.NUMBER_2:
-                    node.agency = Aa2Agency()
                     node.industry = Aa2Industry(node.agency)
         elif uppercase is DemoNodeConstraints.UPPERCASE_B:
             if lowercase is DemoNodeConstraints.LOWERCASE_C:
                 if number is DemoNodeConstraints.NUMBER_3:
-                    node.agency = Bc3Agency()
                     node.industry = Bc3Industry(node.agency)
 
         agent_constraint = ListService.get_item_by_value(constraints, 'trait', 'agent')
