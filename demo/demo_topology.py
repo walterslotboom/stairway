@@ -139,10 +139,7 @@ class DemoAgency(AAgency):
 
     def __init__(self):
         super().__init__()
-        self.agents = IAgent.AGENT_TYPES
-        # self.agents[IAgent.IAgentType.native.name] = NativeAgent()
-        # self.agents[IAgent.IAgentType.cli.name] = CliAgent()
-        # self.agents[IAgent.IAgentType.native.name] = RestAgent()
+        self.agents = [IAgent.IAgentType.native]
 
 
 class Aa1Agency(DemoAgency):
