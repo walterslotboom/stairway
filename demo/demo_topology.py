@@ -149,16 +149,22 @@ class DemoAgency(AAgency):
 
 # convenience wrapper
 class DemoConstraintService:
+    """
+    Convenience wrapper for creating demo node constraints
+
+    Normal constraints will likely use convenience wrappers as well.
+    This is because the node constraint API is very generalized, but most constraints very similar.
+    """
 
     @staticmethod
-    def make_factory_constraints(uppercase, lowercase, number):
+    def make_constraints(uppercase, lowercase, number):
         return [Constraint(DemoNodeConstraints.UPPERCASE, Operator.EQ, uppercase),
                 Constraint(DemoNodeConstraints.LOWERCASE, Operator.EQ, lowercase),
                 Constraint(DemoNodeConstraints.NUMBER, Operator.EQ, number)]
 
     @staticmethod
-    def make_node_factory_constraints(uppercase, lowercase, number):
-        demo_constraints = DemoConstraintService.make_factory_constraints(uppercase, lowercase, number)
+    def make_node_constraints(uppercase, lowercase, number):
+        demo_constraints = DemoConstraintService.make_constraints(uppercase, lowercase, number)
         demo_node_constraints = DemoNodeConstraints(demo_constraints)
         return demo_node_constraints
 

@@ -20,8 +20,8 @@ class ATopoCase(ACase):
 
         for demo_node_factory_constraint_seed in self.demo_node_factory_constraint_seeds:
             demo_node_constraints = \
-                DemoConstraintService.make_node_factory_constraints(*demo_node_factory_constraint_seed)
-            demo_node_constraint = Constraint('agent', Operator.EQ, agent)  # @todo actually do something with agent
+                DemoConstraintService.make_node_constraints(*demo_node_factory_constraint_seed)
+            demo_node_constraint = Constraint('agent', Operator.EQ, agent)
             demo_node_constraints.constraints.append(demo_node_constraint)
             self.demo_topology_constraint.add_node_constraint('{}{}{}'.format(*demo_node_factory_constraint_seed[0],
                                                                               *demo_node_factory_constraint_seed[1],
