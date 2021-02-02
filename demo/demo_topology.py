@@ -1,3 +1,10 @@
+"""
+Example of purpose-specific topology subclasses
+
+Provides a rudimentary example of extending the abstract topology classes.
+Examples are impractical but provide analogies for more meaningful usage.
+"""
+
 from test.topology import ANodeConstraints, AIndustry, AFactory, AAgency, ConstraintSatisfier, ANode, \
     Constraint, Operator, IAgent, NativeAgent, CliAgent, RestAgent
 from util.service.misc_service import ListService
@@ -5,21 +12,26 @@ from util.service.report_service import ReportService
 
 
 class DemoNodeConstraints(ANodeConstraints):
-    # These can be construed to represent a node category like client, dut, and server
+    """
+    Three constraint types are defined, each with three valid possible values.
+
+    Uppercase can be construed to represent a node category like client, dut, and server
+    Lowercase can be construed to represent a node refinement like client OS type or cloud vendor
+    Number can be construed to represent a version and/or build number
+    """
+
     UPPERCASE = 'uppercase'
     UPPERCASE_A = 'A'
     UPPERCASE_B = 'B'
     UPPERCASE_C = 'C'
     UPPERCASES = [UPPERCASE_A, UPPERCASE_B, UPPERCASE_C]
 
-    # These can be construed to represent a node subcategory like product category or branch
     LOWERCASE = 'lowercase'
     LOWERCASE_A = 'a'
     LOWERCASE_B = 'b'
     LOWERCASE_C = 'c'
     LOWERCASES = [LOWERCASE_A, LOWERCASE_B, LOWERCASE_C]
 
-    # These can be construed to represent a version and/or build number
     NUMBER = 'number'
     NUMBER_1 = '1'
     NUMBER_2 = '2'
@@ -30,51 +42,74 @@ class DemoNodeConstraints(ANodeConstraints):
               UPPERCASE: UPPERCASES,
               LOWERCASE: LOWERCASES}
 
+class ANamer:
+    NAME = None  # This is an example of dynamically supplied context
+
+    @property
+    def name(self):
+        return self.NAME
+
+class NamerNative(ANamer):
+
+    def print_name(self):
+        ReportService.report('Node name: {}'.format(self.name))
+
+
+class NameFactory(AFactory):
+
+    NAMER_NATIVE = NamerNative
+
+    def make_namer(self, agent=None):
+        if agent is None:
+            self.agency.active_agent = self.agency.default_agent
+        if self.agency.active_agent == IAgent.IAgentType.native.name:
+            return self.NAMER_NATIVE()
+
 
 class DemoIndustry(AIndustry):
 
-    class NameFactory(AFactory):
-
-        class ANamer:
-            NAME = None  # This is an example of dynamically supplied context
-
-            @property
-            def name(self):
-                return self.NAME
-
-        class NamerNative(ANamer):
-
-            def print_name(self):
-                ReportService.report('Node name: {}'.format(self.name))
-
-        def make_namer(self, agent=None):
-            if agent is None:
-                self.agency.active_agent = self.agency.default_agent
-            if self.agency.active_agent == IAgent.IAgentType.native.name:
-                return self.NamerNative()
+    NAME_FACTORY = NameFactory
 
     def make_name_factory(self, agent=None):
         if agent is None:
             self.agency.active_agent = self.agency.default_agent
-        return self.NameFactory(self.agency)
+        return self.NAME_FACTORY(self.agency)
+
+
+class Aa1NamerNative(NamerNative):
+    NAME = 'Aa1'
+
+
+class Aa1NameFactory(NameFactory):
+    NAMER_NATIVE = Aa1NamerNative
 
 
 class Aa1Industry(DemoIndustry):
-    class NameFactory(DemoIndustry.NameFactory):
-        class NamerNative(DemoIndustry.NameFactory.NamerNative):
-            NAME = 'Aa1'
+    NAME_FACTORY = Aa1NameFactory
+
+
+class Aa2NamerNative(NamerNative):
+    NAME = 'Aa2'
+
+
+class Aa2NameFactory(NameFactory):
+    NAMER_NATIVE = Aa2NamerNative
 
 
 class Aa2Industry(DemoIndustry):
-    class NameFactory(DemoIndustry.NameFactory):
-        class NamerNative(DemoIndustry.NameFactory.NamerNative):
-            NAME = 'Aa2'
+    NAME_FACTORY = Aa2NameFactory
+
+
+class Bc3NamerNative(NamerNative):
+    NAME = 'Bc3'
+
+
+class Bc3NameFactory(NameFactory):
+    NAMER_NATIVE = Bc3NamerNative
 
 
 class Bc3Industry(DemoIndustry):
-    class NameFactory(DemoIndustry.NameFactory):
-        class NamerNative(DemoIndustry.NameFactory.NamerNative):
-            NAME = 'Bc3'
+    NAME_FACTORY = Bc3NameFactory
 
 
 class DemoAgency(AAgency):

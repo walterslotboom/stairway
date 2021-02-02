@@ -298,6 +298,6 @@ class Context:
     :ivar: default_agent: The agent to use if none are explicitly specified.
     :ivar: kwargs: test specific enviroment variables
     """
-    def __init__(self):
+    def __init__(self) -> None:
         self.default_agent = None
         self.kwargs = None  # arbitrary additional context is case-specific

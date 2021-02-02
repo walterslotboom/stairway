@@ -23,13 +23,6 @@ class ListService:
     @staticmethod
     def get_item_by_value(lst, field, value):
         return next((x for x in lst if getattr(x, field) == value), None)
-        # for item in lst:
-        #     if getattr(item, field) == value:
-        #         print("i found it!")
-        #         break
-        #     else:
-        #         item = None
-        # return item
 
     @staticmethod
     def get_median_ish(lst, field):
@@ -340,14 +333,6 @@ class StringService:
         if not input_value and default is not None:
             input_value = default
         return input_value
-
-    @staticmethod
-    def get_firefly_pwd():
-        env_pwd = os.getenv('FF_PWD')
-        if env_pwd is None:
-            env_pwd = StringService.input_secret('Firefly password: ')
-            os.environ['FF_PWD'] = env_pwd
-        return env_pwd
 
     @staticmethod
     def lclip(s: str, clipstring: str) -> str:
