@@ -1,5 +1,5 @@
-from demo.demo_report_case import *
-from test.testable import ASuite
+from src.demo.demo_report_case import *
+from src.test.testable import ASuite
 
 
 class MultiCaseSuite(ASuite):

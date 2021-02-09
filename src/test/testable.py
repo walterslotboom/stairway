@@ -13,10 +13,10 @@ import pdb
 
 from typing import Dict, List
 
-from test.itest import ITest
-from test.result import StepResult, CaseResult, SuiteResult, FlightResult, AResult
-from util.enums import TextualEnum
-from util.service.report_service import IReport, ReportService
+from src.test.itest import ITest
+from src.test.result import StepResult, CaseResult, SuiteResult, FlightResult, AResult
+from src.util.enums import TextualEnum
+from src.util.service.report_service import IReport, ReportService
 from argparse import ArgumentParser
 
 

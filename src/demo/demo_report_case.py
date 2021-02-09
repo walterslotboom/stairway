@@ -1,7 +1,7 @@
 import random
 import sys
-from test.testable import ACase, ACliTestable
-from test.itest import ITest
+from src.test.testable import ACase, ACliTestable
+from src.test.itest import ITest
 
 
 class AllResultsCase(ACase):
@@ -37,20 +37,6 @@ class AllResultsCase(ACase):
 
 class DemoCase(ACase):
     pass
-    # def reserve(self):
-    #     pass
-    #
-    # def prepare(self):
-    #     pass
-    #
-    # def restore(self):
-    #     pass
-    #
-    # def audit(self):
-    #     pass
-    #
-    # def release(self):
-    #     pass
 
 
 class FailingCase(DemoCase):

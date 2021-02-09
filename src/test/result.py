@@ -4,8 +4,8 @@ Core results class for testables.
 Results automatically propagate up through the results hierarchy as tests run.
 Reporting outputs these results in a hierarchical structure mirroring the testables.
 """
-from test.itest import ITest
-from util.service.report_service import ReportService, IReport
+from src.test.itest import ITest
+from src.util.service.report_service import ReportService, IReport
 
 
 # Results are a distinct (if dependent) entity from the test itself
@@ -22,9 +22,11 @@ class AResult:
     :ivar: message: Optional elaboration regarding the state
     """
 
-    def __init__(self, description: str or None = None, state: ITest.State = ITest.State.UNTESTED,
+    def __init__(self, description: str or None = None, state: ITest.State or None = None,
                  message: str or None = None):
         self.description = description
+        if state is None:
+            state = ITest.State.UNTESTED
         self._state = None
         self.state = state
         self.message = message
@@ -39,7 +41,8 @@ class AResult:
 
     @state.setter
     def state(self, state):
-        if state in ITest.State:
+        # @todo Why didn't 'in' work?
+        if ITest.State.__contains__(ITest.State, state):
             self._state = state
         else:
             raise ITest.InvalidStateException('State {} not in valid statuses: {}'.format(state, ITest.State))

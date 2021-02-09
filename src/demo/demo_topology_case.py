@@ -1,16 +1,22 @@
+"""
+Demo suite/cases for topology instantiation
+
+Goes through the process of defining a series of topology constraints, satisfying those constraints, and
+running a simple step that utilizes node-specific functionality within the topology.
+"""
+
 import sys
 
-from demo.demo_topology import DemoNodeConstraints, DemoConstraintSatisfier, DemoConstraintService
-from test.itest import ITest
-from test.testable import ACase, ASuite
-from test.topology import ATopologyConstraint, IAgent, Operator, Constraint
-
-
-# @todo define default agent in topology. Use context object; constructed during satisfy; replaces direct agent?
-# @todo overwrite default agent from command line
+from src.demo.demo_topology import DemoNodeConstraints, DemoConstraintSatisfier, DemoConstraintService
+from src.test.itest import ITest
+from src.test.testable import ACase, ASuite
+from src.test.topology import ATopologyConstraint, IAgent, Operator, Constraint
 
 
 class ATopoCase(ACase):
+    """
+    Generalized case that satisfies many potential topologies
+    """
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -18,26 +24,36 @@ class ATopoCase(ACase):
 
         self.demo_topology_constraint = ATopologyConstraint()
 
+        # Build the topologies constraints from textual seeds of subclass cases.
+        # These seeds dictate the industry. Agency is passed from CLI.
         for demo_node_factory_constraint_seed in self.demo_node_factory_constraint_seeds:
             demo_node_constraints = \
                 DemoConstraintService.make_node_constraints(*demo_node_factory_constraint_seed)
-            demo_node_constraint = Constraint('agent', Operator.EQ, agent)
-            demo_node_constraints.constraints.append(demo_node_constraint)
-            self.demo_topology_constraint.add_node_constraint('{}{}{}'.format(*demo_node_factory_constraint_seed[0],
-                                                                              *demo_node_factory_constraint_seed[1],
-                                                                              *demo_node_factory_constraint_seed[2]),
-                                                              demo_node_constraints)
+            demo_node_agency_constraint = Constraint('agent', Operator.EQ, agent)
+            demo_node_constraints.constraints.append(demo_node_agency_constraint)
+            demo_node_name = '{}{}{}'.format(*demo_node_factory_constraint_seed[0],
+                                             *demo_node_factory_constraint_seed[1],
+                                             *demo_node_factory_constraint_seed[2])
+            self.demo_topology_constraint.add_node_constraint(demo_node_name, demo_node_constraints)
         self.demo_topology = None
 
     def reserve(self):
         self.demo_topology = DemoConstraintSatisfier().satisfy_topology(self.demo_topology_constraint)
 
     def test(self):
+        """
+        Exercise base functionality of satisfied nodes
+
+        :return: None
+        """
+
         for node_name in self.demo_topology.nodes:
+            # Drill down the industry / factory composition to the functionality
             industry = self.demo_topology.nodes[node_name].industry
             namer_factory = industry.make_name_factory()
             namer = namer_factory.make_namer()
 
+            # Exercise a testable using that functionally
             with self.stepper() as stepper:
                 namer.print_name()
                 name = namer.name
@@ -78,7 +94,11 @@ class ThreeNodeTopoCase(ATopoCase):
 
 
 class CliConstraintTopoCase(ATopoCase):
-    # Analog for passing in version and build number
+    """
+    Gets node constraints from the command line
+
+    Analog for passing in version and build number
+    """
     DESCRIPTION = "CLI-based parameter topology instantiation"
 
     def __init__(self, **kwargs):

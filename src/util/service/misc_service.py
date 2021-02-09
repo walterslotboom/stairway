@@ -14,7 +14,6 @@ import ast
 import random
 from itertools import chain, combinations, filterfalse, islice
 from operator import attrgetter
-import os
 import re
 
 

@@ -1,7 +1,7 @@
 import contextlib
 import sys
-from util.enums import OrderedEnum
-from util.service.time_service import TimeService
+from src.util.enums import OrderedEnum
+from src.util.service.time_service import TimeService
 
 
 class IReport:

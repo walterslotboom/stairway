@@ -1,7 +1,7 @@
 """
 Basic testing globals
 """
-from util.enums import OrderedEnum, TextualEnum
+from src.util.enums import OrderedEnum, TextualEnum
 
 
 class ITest:

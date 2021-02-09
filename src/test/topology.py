@@ -7,7 +7,7 @@ This access is via industries and agencies.
 """
 from __future__ import annotations
 from typing import List
-from util.enums import TextualEnum
+from src.util.enums import TextualEnum
 
 
 class Operator:

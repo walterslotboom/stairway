@@ -5,10 +5,10 @@ Provides a rudimentary example of extending the abstract topology classes.
 Examples are impractical but provide analogies for more meaningful usage.
 """
 
-from test.topology import ANodeConstraints, AIndustry, AFactory, AAgency, ConstraintSatisfier, ANode, \
+from src.test.topology import ANodeConstraints, AIndustry, AFactory, AAgency, ConstraintSatisfier, ANode, \
     Constraint, Operator, IAgent
-from util.service.misc_service import ListService
-from util.service.report_service import ReportService
+from src.util.service.misc_service import ListService
+from src.util.service.report_service import ReportService
 
 
 class DemoNodeConstraints(ANodeConstraints):
@@ -45,11 +45,11 @@ class DemoNodeConstraints(ANodeConstraints):
 
 class ANamer:
     """
-    Basic automation that transcends particular agent.
+    Automation that transcends particular agent.
 
-    Contains the non-interface-specific processing that needs to be done.
+    Contains the non-interface/agency-specific processing that needs to be done.
     This minimal example simply returns a name unique to the class.
-    Name will differ based on constraint-driven node satisfaction.
+    Actual name will differ based on constraint-driven node satisfaction into appropriate subclasses.
     """
     NAME = None
 
@@ -64,7 +64,6 @@ class NamerNative(ANamer):
 
     This native agent simply outputs the unique name to standard out.
     """
-
     def print_name(self):
         ReportService.report('Node name: {}'.format(self.name))
 
@@ -75,7 +74,6 @@ class NameFactory(AFactory):
 
     Will use default agent type if none supplied.
     """
-
     NAMER_NATIVE = NamerNative
 
     def make_namer(self, agent=None):
@@ -91,7 +89,6 @@ class DemoIndustry(AIndustry):
 
     Will use default agent type if none supplied.
     """
-
     NAME_FACTORY = NameFactory
 
     def make_name_factory(self, agent=None):
@@ -173,8 +170,12 @@ class DemoConstraintService:
 
 
 class DemoConstraintSatisfier(ConstraintSatisfier):
+    """
+    Example of a hierarchical constraint satisfaction
 
-    # An example of a hierarchical constraint satisfaction
+    An individual node's constraints are extracted and used to instantiate its specific industry and agency.
+    """
+
     def satisfy_node(self, constraints):
         node = ANode()
         node.agency = DemoAgency()
