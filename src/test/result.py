@@ -22,11 +22,9 @@ class AResult:
     :ivar: message: Optional elaboration regarding the state
     """
 
-    def __init__(self, description: str or None = None, state: ITest.State or None = None,
+    def __init__(self, description: str or None = None, state: ITest.State = ITest.State.UNTESTED,
                  message: str or None = None):
         self.description = description
-        if state is None:
-            state = ITest.State.UNTESTED
         self._state = None
         self.state = state
         self.message = message
