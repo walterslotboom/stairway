@@ -5,7 +5,6 @@ from src.util.service.time_service import TimeService
 
 
 class IReport:
-
     class Level(OrderedEnum):
         debug = 10
         detail = 20
@@ -35,9 +34,9 @@ class ReportService:
     #   ...
     #   # test contents of outbuf
     outputter = sys.stdout
-    
+
     level_threshold = IReport.Level.detail
-    
+
     @staticmethod
     def report(message='', level=IReport.Level.none, patency=IReport.Patency.minor, delimiter="∞", length=10,
                lead=None, trail=None, timestamp=True):
@@ -163,17 +162,4 @@ class ReportService:
 
     @staticmethod
     def indent(message, indent):
-        return str(message).rjust(len(message) + indent*IReport.INDENT_DEPTH)
-
-    # @contextlib.contextmanager
-    # def phase_report(self, phase_name):
-    #     ACase._report_phase_transition(phase_name, 'Entering', '>')
-    #     phase_timer = TimeService.StopWatch()
-    #     try:
-    #         with phase_timer:
-    #             yield
-    #     finally:
-    #         ReportService.report("{}/{} elapsed time: {}".format(self.test,
-    #                                                              phase_name,
-    #                                                              phase_timer.elapsed_timedelta))
-    #         ACase._report_phase_transition(phase_name, 'Exiting', '<')
+        return str(message).rjust(len(message) + indent * IReport.INDENT_DEPTH)

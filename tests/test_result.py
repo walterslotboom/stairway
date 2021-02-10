@@ -11,5 +11,6 @@ class TestAResult(unittest.TestCase):
         self.assertIn(result.state, ITest.State)
         self.assertEqual(result.state, ITest.State.UNTESTED)
 
+
 if __name__ == '__main__':
     unittest.main()

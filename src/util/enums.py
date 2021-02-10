@@ -1,7 +1,7 @@
 """
 Custom enumeration classes
 
-Used primarily for fromalizing CLI interactions and reporting, and comparison of restricted values.
+Used primarily for for formalizing CLI interactions and reporting, and comparison of restricted values.
 """
 from __future__ import annotations
 from enum import Enum

@@ -267,7 +267,8 @@ class Step(ATestable):
         Validates response action is valid before setting it
         :param response: Desired respond action for unexpected result state
         """
-        if response in ITest.Response:
+        # @todo Why didn't 'in' work?
+        if ITest.Response.__contains__(ITest.Response, response):
             self._response = response
         else:
             raise ITest.InvalidStateException('Response {} not in valid responses: {}'.format(response,

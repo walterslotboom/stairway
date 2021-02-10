@@ -9,6 +9,8 @@ from src.util.service.report_service import ReportService, IReport
 
 
 # Results are a distinct (if dependent) entity from the test itself
+
+
 class AResult:
     """
     Abstract class underlying all results from individual steps to massive suites

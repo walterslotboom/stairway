@@ -1,7 +1,7 @@
 """
 Basic testing globals
 """
-from src.util.enums import OrderedEnum, TextualEnum
+from src.util.enums import OrderedEnum
 
 
 class ITest:
@@ -32,7 +32,7 @@ class ITest:
         if state <= State.ABEND:
             BAD_STATE.append(state)
 
-    class Response(TextualEnum):
+    class Response(OrderedEnum):
         """
         Possible responses to take upon failing a step (or possibly higher constructs)
         """

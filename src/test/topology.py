@@ -161,7 +161,7 @@ class ConstraintSatisfier:
 
     def satisfy_topology(self, topology_constraint: ATopologyConstraint) -> ATopology:
         """
-        Resolve topology constraints into usuable topology objects.
+        Resolve topology constraints into usable topology objects.
 
         :param topology_constraint: Topology constraint to be resolved into topology.
         :return: Topology containing usable nodes
@@ -175,7 +175,7 @@ class ConstraintSatisfier:
 
     def satisfy_node(self, constraints: ANodeConstraints) -> ANode:
         """
-        Resolve nodes constraints into usuable nodes.
+        Resolve nodes constraints into usable nodes.
 
         :param constraints: Node constraints to resolve.
         """
@@ -188,7 +188,7 @@ class AIndustry:
 
     Each node in the topology has an industry by which all of its (many) factories and services are made.
     These factories in turn create the automation objects that do the actual interactions.
-    The industry is specific to that nodes versioning, which is dervied from the constraints.
+    The industry is specific to that nodes versioning, which is derived from the constraints.
     The motivation is that once the node is resolved, the tests can be oblivious to the implementation details.
 
     :ivar: agency: The agency the industry will pass onto its factories
@@ -297,7 +297,7 @@ class Context:
     Arbitrary test-specific environment variables.
 
     :ivar: default_agent: The agent to use if none are explicitly specified.
-    :ivar: kwargs: test specific enviroment variables
+    :ivar: kwargs: test specific environment variables
     """
     def __init__(self) -> None:
         self.default_agent = None
