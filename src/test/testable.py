@@ -182,7 +182,7 @@ class ACliTestable:
 
 
 # Atomic checks within cases. Should only be used within context manager
-class AStep(ATestable):
+class Step(ATestable):
     """
     Single, atomic checks within larger testables.
 
@@ -215,7 +215,7 @@ class AStep(ATestable):
         self.expecteds = expecteds
         self.response = response
 
-    def __enter__(self) -> AStep:
+    def __enter__(self) -> Step:
         return self
 
     def __exit__(self, exception_type, exception_value, traceback) -> None:
@@ -274,7 +274,7 @@ class AStep(ATestable):
                                                                                               ITest.Response))
 
 
-class AStairs(ATestable):
+class AStair(ATestable):
     """
     Aggregates individual steps into larger, more meaningful sequences (e.g. flights & cases).
 
@@ -286,12 +286,12 @@ class AStairs(ATestable):
     @contextlib.contextmanager
     def stepper(self, description: str or None = None, state: ITest.State = ITest.State.UNTESTED,
                 message: str or None = None, expecteds: List[ITest.State] = None,
-                response: ITest.Response = ITest.Response.preserve) -> AStep:
+                response: ITest.Response = ITest.Response.preserve) -> Step:
         """
         Context manager to run an individual step's actions and verifications
 
         All steps should be run within this context to ensure proper recording / reporting at the case level
-        The real essence of the step, however, is in the AStep object.
+        The real essence of the step, however, is in the Step object.
 
         :param description: Meaningful but short explanation of the step
         :param state: Initial state of the step, which will be updated accordingly
@@ -301,7 +301,7 @@ class AStairs(ATestable):
         """
         if expecteds is None:
             expecteds = [ITest.State.PASS]
-        with AStep(description, state, message, expecteds, response) as step:
+        with Step(description, state, message, expecteds, response) as step:
             try:
                 yield step  # results can be updated anytime in context
             finally:
@@ -313,7 +313,7 @@ class AStairs(ATestable):
 
     @contextlib.contextmanager
     def flyer(self, name: str or None = None, description: str or None = None,
-              state: ITest.State = ITest.State.UNTESTED, message: str or None = None) -> AFlight:
+              state: ITest.State = ITest.State.UNTESTED, message: str or None = None) -> Flight:
         """
         Context manager to run a flight's sequence of actions and verifications
 
@@ -326,9 +326,9 @@ class AStairs(ATestable):
         :param message: Explanation of state
         """
         if name is None:
-            name = AFlight.NAME
+            name = Flight.NAME
         with ReportService.demarcate("'{}' Flight".format(name), IReport.Level.info, IReport.Patency.minor):
-            with AFlight(name, description, state, message) as flight:
+            with Flight(name, description, state, message) as flight:
                 try:
                     yield flight  # results can be updated anytime in context
                 finally:
@@ -336,7 +336,7 @@ class AStairs(ATestable):
                     self.record_result(flight.result)
 
 
-class AFlight(AStairs, AStep):
+class Flight(AStair, Step):
     """
     Runs a series of individual steps and records/reports the result as a single entity.
 
@@ -360,14 +360,14 @@ class AFlight(AStairs, AStep):
         self.name = name
         self._result = FlightResult(self.name, self.default_description)
 
-    def __enter__(self) -> AFlight:
+    def __enter__(self) -> Flight:
         return self
 
     def __exit__(self, exception_type, exception_value, traceback) -> None:
         self._result.report(recurse=False)
 
 
-class ACase(ACliTestable, AStairs):
+class ACase(ACliTestable, AStair):
     """
     A substantive, coherent sequence of steps that verify aspects of product functionality.
 

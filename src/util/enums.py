@@ -32,7 +32,4 @@ class OrderedEnum(TextualEnum):
 
     # @todo Why didn't the default __contains__ work?
     def __contains__(self, item):
-        for member in self.__iter__():
-            if item == member:
-                return True
-        return False
+        return item in self.__iter__()
