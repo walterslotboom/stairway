@@ -34,7 +34,7 @@ class ATestable:
     For non-steps, the run-mode of the tests at large (usually passed from CLI), primarily to pass down to subtestables.
     For steps, the specific response for that step. Therefore subclasses have different setters/getters.
     @todo Is more rigorous response OOP needed?
-    :ivar _result: current / final result of testable execution
+    :ivar result: current / final result of testable execution
     """
 
     DESCRIPTION: str or None = None
@@ -43,7 +43,7 @@ class ATestable:
         self._name: str or None = None
         self.description: str = self.DESCRIPTION
         self._response: ITest.Response or None = None
-        self._result: AResult or None = None  # should be immediately overridden to untested (for starters)
+        self.result: AResult or None = None  # should be immediately overridden to untested (for starters)
 
     def record_result(self, result: AResult) -> None:
         """
@@ -51,20 +51,20 @@ class ATestable:
         Result object is polymorphic based on type of testable
         :param result: final state of testable
         """
-        self._result.record_result(result)
+        self.result.record_result(result)
 
     def report(self) -> None:
         """
         Report the testable's recorded result(s) to I/O (stdout by default)
         """
-        self._result.report()
+        self.result.report()
 
     def reset_result(self) -> None:
         """
         Sets the testable's result and message to Reset state.
         Useful when looping a testable to try and induce an intermittent failure.
         """
-        self._result.reset()
+        self.result.reset()
 
     @contextlib.contextmanager
     def demarcate_phase(self, phase: str) -> None:
@@ -88,20 +88,20 @@ class ATestable:
     def name(self, name: str) -> None:
         self._name = name
 
-    @property
-    def result(self) -> AResult:
-        """
-        Results are a distinct (if dependent) entity from the test itself.
-        Can be accessed during runs but most important at completion.
-
-        :return: Result object with description, state, and optional message
-        """
-        return self._result
-
-    @result.setter
-    def result(self, value: AResult) -> None:
-        self._result = value
-
+    # @property
+    # def result(self) -> AResult:
+    #     """
+    #     Results are a distinct (if dependent) entity from the test itself.
+    #     Can be accessed during runs but most important at completion.
+    #
+    #     :return: Result object with description, state, and optional message
+    #     """
+    #     return self.result
+    #
+    # @result.setter
+    # def result(self, value: AResult) -> None:
+    #     self.result = value
+    #
     @property
     def default_description(self) -> str:
         """
@@ -208,7 +208,7 @@ class Step(ATestable):
         :param response: Action with which to respond to failures
         """
         super().__init__()
-        self._result = None
+        self.result = None
         self.result = StepResult(description, state, message)
         if expecteds is None:
             expecteds = [ITest.State.PASS]  # Pass is the default expected final state
@@ -333,7 +333,6 @@ class AStair(ATestable):
                 try:
                     yield flight  # results can be updated anytime in context
                 finally:
-                    # step.assess_state()
                     self.record_result(flight.result)
 
 
@@ -365,7 +364,7 @@ class Flight(AStair, Step):
         return self
 
     def __exit__(self, exception_type, exception_value, traceback) -> None:
-        self._result.report(recurse=False)
+        self.result.report(recurse=False)
 
 
 class ACase(ACliTestable, AStair):
@@ -382,7 +381,7 @@ class ACase(ACliTestable, AStair):
         :param kwargs: CLI parameters
         """
         super().__init__(**kwargs)
-        self._result = CaseResult(self.name, self.default_description)
+        self.result = CaseResult(self.name, self.default_description)
 
     def reserve(self) -> None:
         """
@@ -471,8 +470,8 @@ class ACase(ACliTestable, AStair):
                     self.restore()
             except Exception as exception:
                 import traceback
-                self._result.result = ITest.State.ABEND
-                self._result.message = str(exception) + '\n\n' + traceback.format_exc()
+                self.result.result = ITest.State.ABEND
+                self.result.message = str(exception) + '\n\n' + traceback.format_exc()
             with self.demarcate_phase(ITest.Phase.report.name):
                 self.report()
             with self.demarcate_phase(ITest.Phase.release.name):
@@ -481,7 +480,7 @@ class ACase(ACliTestable, AStair):
 
 class ASuite(ACliTestable, ATestable):
     """
-    Hierachical sequence of subsuites and cases.
+    Hierarchical sequence of subsuites and cases.
 
     :ivar: testables: subsuites and cases contained in the suite
     """
@@ -493,7 +492,7 @@ class ASuite(ACliTestable, ATestable):
         """
         super().__init__(**kwargs)
         self.testables = testables  # list of subsuites and cases
-        self._result = SuiteResult(self.name, self.default_description)
+        self.result = SuiteResult(self.name, self.default_description)
 
     def execute(self) -> None:
         """
