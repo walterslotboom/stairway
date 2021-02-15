@@ -47,6 +47,11 @@ class AResult:
         else:
             raise ITest.InvalidStateException('State {} not in valid statuses: {}'.format(state, ITest.State))
 
+    def reset(self):
+        self.description = 'Reset'
+        self.state = ITest.State.RESET
+        self.message = 'Reset'
+
     def report(self) -> None:
         """
         Output the final result(s) to persistent I/O
@@ -119,10 +124,8 @@ class ATestResult(AResult):
 
         Useful when looping a testable to try and induce an intermittent failure.
         """
+        super().reset()
         self.subresults = []
-        self.description = 'Reset'
-        self.state = ITest.State.RESET
-        self.message = 'Reset'
 
     def __assess_results(self) -> None:
         """

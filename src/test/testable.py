@@ -339,7 +339,7 @@ class AStair(ATestable):
 
 class Flight(AStair, Step):
     """
-    Runs a series of individual steps and records/reports the result as a single entity.
+    Runs a series of steps/subflights and records/reports the result as a single entity.
 
     Usually constitutes a subset of a case's steps.
     This is particularly useful for running large numbers of similar permutations.
@@ -359,7 +359,7 @@ class Flight(AStair, Step):
         if name is None:
             name = self.NAME
         self.name = name
-        self._result = FlightResult(self.name, self.default_description)
+        self.result: FlightResult = FlightResult(self.name, self.default_description)
 
     def __enter__(self) -> Flight:
         return self
